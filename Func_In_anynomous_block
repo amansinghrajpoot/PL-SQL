@@ -1,0 +1,13 @@
+declare
+    c pls_integer;
+    procedure addition (a integer, b integer, c out integer ) is
+        begin
+            c := a + b;
+        end;
+
+    begin
+
+    addition(2, 3, c);
+    DBMS_OUTPUT.PUT_LINE(c);
+
+end;
