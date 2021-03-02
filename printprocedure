@@ -1,0 +1,26 @@
+create package p as
+    procedure pr( a in varchar2 default null);
+    procedure pr( a in boolean);
+end;
+/
+
+create or replace package body p as
+ procedure pr( a in varchar2 default null) is
+begin
+    if a is null then
+      DBMS_OUTPUT.PUT_LINE('<null>');
+      else
+      DBMS_OUTPUT.PUT_LINE(a);
+    end if;
+
+end;
+ procedure pr( a in boolean) is
+begin
+    if a then
+      DBMS_OUTPUT.PUT_LINE('True');
+      else
+      DBMS_OUTPUT.PUT_LINE('False');
+    end if;
+end;
+end;
+
