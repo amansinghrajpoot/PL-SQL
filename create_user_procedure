@@ -1,0 +1,32 @@
+CREATE OR REPLACE PROCEDURE CREATE_USER(
+ t_username IN VARCHAR2 DEFAULT NULL ,
+ t_password IN VARCHAR2 DEFAULT NULL ,
+ t_default_table IN VARCHAR2 DEFAULT NULL ,
+ t_quota IN VARCHAR2 DEFAULT NULL
+)
+IS
+    INVALID_USERNAME_OR_PASSWORD EXCEPTION;
+    PRAGMA EXCEPTION_INIT (INVALID_USERNAME_OR_PASSWORD, -20999);
+    m_username VARCHAR2(30) := t_username;
+    m_password VARCHAR2(30) := t_password;
+    m_default_table VARCHAR2(30) := t_default_table;
+    m_quota VARCHAR2(30) := t_quota;
+
+BEGIN
+
+  IF m_username IS NULL OR m_password IS NULL THEN
+  RAISE_APPLICATION_ERROR(-20999, 'Invalid username or password');
+  END IF;
+
+  IF m_default_table IS NOT NULL  THEN
+
+            IF m_quota != '0' AND m_default_table IS NOT NULL THEN
+              EXECUTE IMMEDIATE 'CREATE USER '||m_username||' IDENTIFIED by '||m_password||' DEFAULT TABLESPACE '||m_default_table||' QUOTA '||m_quota||'M ON '||m_default_table;
+              ELSE
+              EXECUTE IMMEDIATE 'CREATE USER '||m_username||' IDENTIFIED by '||m_password||' DEFAULT TABLESPACE '||m_default_table;
+            END IF;
+  ELSE
+    EXECUTE IMMEDIATE 'CREATE USER '||m_username||' IDENTIFIED by '||m_password;
+  END IF;
+
+END;
