@@ -1,0 +1,39 @@
+DECLARE
+type names_table is table of VARCHAR2(50);
+  names names_table;
+TYPE source_txt_table is TABLE OF VARCHAR2(32767);
+  source_txt source_txt_table;
+  header VARCHAR2(32767);
+  final_sourc_txt VARCHAR2(32767);
+BEGIN
+
+  SELECT OBJECT_NAME bulk COLLECT into names from user_procedures WHERE object_type = 'PROCEDURE' AND OBJECT_NAME IN ('DO_SOMETHING_1','DO_SOMETHING_2');
+
+  FOR i in 1..names.LAST
+  LOOP
+
+    SELECT text bulk COLLECT into source_txt
+             FROM all_source
+             WHERE name = names(i)
+             ORDER BY line;
+
+      source_txt(1) := 'CREATE OR REPLACE '||source_txt(1);
+
+     header := REGEXP_REPLACE(upper(source_txt(1)), names(i), 'HR.'||names(i)||'_bck');  --make changes according to new naming convention
+
+     source_txt(1) := header;
+
+      FOR j in 1..source_txt.LAST
+      LOOP
+
+       final_sourc_txt := final_sourc_txt||source_txt(j);
+
+      END LOOP;
+      EXECUTE IMMEDIATE final_sourc_txt;
+      dbms_output.put_line('Success: '|| names(i));
+      final_sourc_txt := NULL;
+      header := NULL;
+      source_txt := NULL;
+  END LOOP;
+
+END;
